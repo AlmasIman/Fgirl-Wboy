@@ -29,8 +29,8 @@ export default class mainScene extends Phaser.Scene {
         this.load.image('fdoor', '../../assets/fire_door.png')
         this.load.image('wdoor', '../../assets/water_door.png')
 
-        this.load.spritesheet('player', '../../assets/player/papa.png', {frameWidth: 32, frameHeidht: 32})
-        this.load.spritesheet('player2', '../../assets/player/elite_knight.png', {frameWidth: 32, frameHeidht: 32})
+        this.load.spritesheet('player', '../../assets/player/papa.png', {frameWidth: 32, frameHeight: 32})
+        this.load.spritesheet('player2', '../../assets/player/elite_knight.png', {frameWidth: 32, frameHeight: 32})
         
     }
 
@@ -82,19 +82,11 @@ export default class mainScene extends Phaser.Scene {
         this.water_doors.create(350,280,'wdoor')
 
 
-
-
-
-
-
-
-
-
-        this.player = this.physics.add.sprite(100,530, 'player')
+        this.player = this.physics.add.sprite(50,565, 'player')
         this.player.setCollideWorldBounds(true)
         this.player.setBounce(0.2)
 
-        this.player2 = this.physics.add.sprite(50,530, 'player2')
+        this.player2 = this.physics.add.sprite(100,565, 'player2')
         this.player2.setCollideWorldBounds(true)
         this.player2.setBounce(0.2)
 
@@ -102,14 +94,26 @@ export default class mainScene extends Phaser.Scene {
 
         this.cursor2 = this.input.keyboard.addKeys('W,S,A,D');
         
-        // Enable physics on player2 sprite
         this.physics.add.existing(this.player2);
 
 
         this.physics.add.collider(this.player, this.plates, this.handlePlateCollision, null, this);
         this.physics.add.collider(this.player2, this.plates, this.handlePlateCollision, null, this);
 
-        
+        this.handlePlayerDeath = (player) => {
+            player.disableBody(true, true);
+            this.time.delayedCall(1000, () => {
+                this.scene.restart();
+            }, [], this);
+        };
+    
+        this.physics.add.collider(this.player, this.waters, () => {
+            this.handlePlayerDeath(this.player);
+        });
+    
+        this.physics.add.collider(this.player2, this.lavas, () => {
+            this.handlePlayerDeath(this.player2);
+        });
 
         this.physics.add.collider(this.player, this.platforms)
         this.physics.add.collider(this.player, this.waters)
@@ -128,19 +132,37 @@ export default class mainScene extends Phaser.Scene {
         this.physics.add.collider(this.player2, this.gates)
         this.physics.add.collider(this.player2, this.water_doors)
 
+
+        
     }
 
     handlePlateCollision(player, plate) {
-        // Disable the body and visibility of the gate
         this.gates.getChildren()[0].disableBody(true, true);
         this.gates.getChildren()[0].setVisible(false);
      
-        // Enable the body and visibility of the water door
      }
      
-
+     handlePlayerDeath(player) {
+        player.disableBody(true, true);
+    
+        this.time.delayedCall(1000, () => {
+            this.scene.restart();
+        }, [], this);
+    }
     update() {
+
+        this.physics.add.overlap(this.player, this.waters, () => {
+            this.player.destroy();
+            this.scene.restart();
+          });
         
+          this.physics.add.overlap(this.player2, this.lavas, () => {
+            this.player2.destroy();
+            this.scene.restart();
+          });
+        
+
+
         if (this.cursor.left.isDown) {
             this.player.setVelocityX(-160)
         } else if (this.cursor.right.isDown) {
@@ -153,7 +175,6 @@ export default class mainScene extends Phaser.Scene {
             this.player.setVelocityY(-250)
         }
 
-        // Move player2 with WASD keys
         if (this.cursor2.A.isDown) {
             this.player2.setVelocityX(-160);
         } else if (this.cursor2.D.isDown) {
