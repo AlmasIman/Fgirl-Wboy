@@ -23,7 +23,7 @@ export default class level2Scene extends Phaser.Scene {
         this.load.image('options_button', "'../../assets/options_button.png")
         this.load.image('play_button', "'../../assets/play_button.png")
         this.load.image('logo', "'../../assets/logo.png")
-        this.load.audio('title_music', '../../assets/dist_assets_audio_shuinvy-childhood.mp3')
+        this.load.audio('bgm', '../../assets/nevergonnagiveyouapp.mp3')
 
         /* loading bar */
         let loadingBar = this.add.graphics({
@@ -56,6 +56,9 @@ export default class level2Scene extends Phaser.Scene {
 
     create() {
 
+        let bgm = this.sound.add('bgm');
+        bgm.play();
+        bgm.setVolume(0.5);
         this.add.image(400,300, 'title_bg').setOrigin()
 
         this.add.image(400,300,'sky')
@@ -123,10 +126,12 @@ export default class level2Scene extends Phaser.Scene {
     
         this.physics.add.collider(this.player, this.waters, () => {
             this.handlePlayerDeath(this.player);
+            this.restartMusic();
         });
     
         this.physics.add.collider(this.player2, this.lavas, () => {
             this.handlePlayerDeath(this.player2);
+            this.restartMusic();
         });
 
                 

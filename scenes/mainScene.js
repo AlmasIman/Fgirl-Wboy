@@ -14,7 +14,6 @@ export default class mainScene extends Phaser.Scene {
         this.cursor;
         this.player2;
         this.cursor2;
-
     }
 
     preload() {
@@ -23,7 +22,8 @@ export default class mainScene extends Phaser.Scene {
         this.load.image('options_button', "'../../assets/options_button.png")
         this.load.image('play_button', "'../../assets/play_button.png")
         this.load.image('logo', "'../../assets/logo.png")
-        this.load.audio('title_music', '../../assets/dist_assets_audio_shuinvy-childhood.mp3')
+        this.load.audio('bgm', '../../assets/nevergonnagiveyouapp.mp3')
+        //this.load.audio('bgm', ['assets/audio/bgm.mp3']);
 
         /* loading bar */
         let loadingBar = this.add.graphics({
@@ -55,6 +55,11 @@ export default class mainScene extends Phaser.Scene {
     }
 
     create() {
+
+        let bgm = this.sound.add('bgm');
+        bgm.play();
+        bgm.setVolume(0.5);
+        
         this.add.image(400,300, 'title_bg').setOrigin()
 
         this.add.image(400,300,'sky')
@@ -68,8 +73,7 @@ export default class mainScene extends Phaser.Scene {
         this.gates = this.physics.add.staticGroup()
         this.fire_doors = this.physics.add.staticGroup()
         this.water_doors = this.physics.add.staticGroup()
-    
-    
+
 
         
         this.platforms.create(20,520,'platform')
@@ -117,7 +121,7 @@ export default class mainScene extends Phaser.Scene {
         this.cursor2 = this.input.keyboard.addKeys('W,S,A,D');
         
         this.physics.add.existing(this.player2);
-        
+
         this.physics.add.collider(this.player, this.fire_doors, () => {
             if (this.water_doors.countActive(true) === 1) {
                 console.log('Congratulations, you have passed the level.');
@@ -143,11 +147,26 @@ export default class mainScene extends Phaser.Scene {
     
         this.physics.add.collider(this.player, this.waters, () => {
             this.handlePlayerDeath(this.player);
+            this.restartMusic();
         });
     
         this.physics.add.collider(this.player2, this.lavas, () => {
             this.handlePlayerDeath(this.player2);
+            this.restartMusic();
         });
+
+        
+        this.physics.add.collider(this.player, this.fire_doors, () => {
+            if (this.water_doors.countActive(true) === 1) {
+                console.log('Congratulations, you have passed the level.');
+            }
+        })
+
+        this.physics.add.collider(this.player2, this.water_doors, () => {
+            if (this.fire_doors.countActive(true) === 1) {
+                console.log('Congratulations, you have passed the level.');
+            }
+        })
 
         this.physics.add.collider(this.player, this.platforms)
         this.physics.add.collider(this.player, this.waters)
@@ -183,6 +202,14 @@ export default class mainScene extends Phaser.Scene {
             this.scene.restart();
         }, [], this);
     }
+
+    restartMusic() {
+        let bgm = this.sound.get('bgm');
+        bgm.stop();
+        bgm.play();
+      }
+
+      
     update() {
         if (this.cursor.left.isDown) {
             this.player.setVelocityX(-160)
