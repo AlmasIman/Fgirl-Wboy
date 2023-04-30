@@ -56,9 +56,6 @@ export default class mainScene extends Phaser.Scene {
 
     create() {
 
-        let bgm = this.sound.add('bgm');
-        bgm.play();
-        bgm.setVolume(0.5);
         
         this.add.image(400,300, 'title_bg').setOrigin()
 
@@ -147,12 +144,10 @@ export default class mainScene extends Phaser.Scene {
     
         this.physics.add.collider(this.player, this.waters, () => {
             this.handlePlayerDeath(this.player);
-            this.restartMusic();
         });
     
         this.physics.add.collider(this.player2, this.lavas, () => {
             this.handlePlayerDeath(this.player2);
-            this.restartMusic();
         });
 
         
@@ -203,13 +198,6 @@ export default class mainScene extends Phaser.Scene {
         }, [], this);
     }
 
-    restartMusic() {
-        let bgm = this.sound.get('bgm');
-        bgm.stop();
-        bgm.play();
-      }
-
-      
     update() {
         if (this.cursor.left.isDown) {
             this.player.setVelocityX(-160)
