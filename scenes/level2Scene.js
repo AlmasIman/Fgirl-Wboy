@@ -1,6 +1,6 @@
-export default class mainScene extends Phaser.Scene {
+export default class level2Scene extends Phaser.Scene {
     constructor() {
-        super('mainScene')
+        super('2levelScene')
         
         this.ground;
         this.platforms;
@@ -14,7 +14,7 @@ export default class mainScene extends Phaser.Scene {
         this.cursor;
         this.player2;
         this.cursor2;
-
+        
     }
 
     preload() {
@@ -55,6 +55,7 @@ export default class mainScene extends Phaser.Scene {
     }
 
     create() {
+
         this.add.image(400,300, 'title_bg').setOrigin()
 
         this.add.image(400,300,'sky')
@@ -71,40 +72,31 @@ export default class mainScene extends Phaser.Scene {
     
     
 
-        
         this.platforms.create(20,520,'platform')
-        this.lavas.create(128,525, 'lava')
-        this.waters.create(340,525,'water')
-        this.platforms.create(240,520,'platform')
-        this.platforms.create(448,520,'platform')
-        this.platforms.create(575,520,'platform')
+        this.platforms.create(100,520,'platform')
+        this.gates.create(150,460,'gate')
+        this.platforms.create(100,400,'platform')
+        this.platforms.create(20,400,'platform')
+        this.platforms.create(230,400,'platform')
+        this.platforms.create(355,400,'platform')
+        this.platforms.create(480,430,'platform')
+        this.platforms.create(720,500,'platform')
+        this.lavas.create(400,600, 'lava')
+        this.lavas.create(500,600, 'lava')
+        this.plates.create(50,370,'plate')
+        this.waters.create(480,430,'water')
 
 
-        this.platforms.create(760,570,'platform')
-        this.platforms.create(735,420,'platform')
-        this.platforms.create(605,420,'platform')
-        this.platforms.create(480,420,'platform')
-        this.platforms.create(350,420,'platform')
-        this.platforms.create(100,420,'platform')
+        this.platforms.create(230,520,'platform')
+        this.platforms.create(820,430,'platform')
+        this.platforms.create(735,350,'platform')
+        this.platforms.create(520,270,'platform')
+        this.fire_doors.create(520,235,'fdoor')
 
+        this.platforms.create(240,270,'platform')
+        this.water_doors.create(240,235,'wdoor')
 
-        this.platforms.create(120,317,'platform')
-        this.platforms.create(150,234,'vertikal_platform')
-        this.platforms.create(67,180,'platform')
-        this.platforms.create(250,317,'platform')
-        this.platforms.create(380,317,'platform')
-        this.platforms.create(510,317,'platform')
-        this.platforms.create(640,317,'platform')
-        this.platforms.create(380,317,'platform')
-
-        this.plates.create(105,300,'plate')
-        this.gates.create(500,360,'gate')
-
-        this.fire_doors.create(400,280,'fdoor')
-        this.water_doors.create(350,280,'wdoor')
-
-
-        this.player = this.physics.add.sprite(50,565, 'player')
+        this.player = this.physics.add.sprite(50,470, 'player')
         this.player.setCollideWorldBounds(true)
         this.player.setBounce(0.2)
 
@@ -117,18 +109,6 @@ export default class mainScene extends Phaser.Scene {
         this.cursor2 = this.input.keyboard.addKeys('W,S,A,D');
         
         this.physics.add.existing(this.player2);
-        
-        this.physics.add.collider(this.player, this.fire_doors, () => {
-            if (this.water_doors.countActive(true) === 1) {
-                console.log('Congratulations, you have passed the level.');
-            }
-        })
-
-        this.physics.add.collider(this.player2, this.water_doors, () => {
-            if (this.fire_doors.countActive(true) === 1) {
-                console.log('Congratulations, you have passed the level.');
-            }
-        })
 
 
         this.physics.add.collider(this.player, this.plates, this.handlePlateCollision, null, this);
@@ -148,6 +128,20 @@ export default class mainScene extends Phaser.Scene {
         this.physics.add.collider(this.player2, this.lavas, () => {
             this.handlePlayerDeath(this.player2);
         });
+
+                
+        this.physics.add.collider(this.player, this.fire_doors, () => {
+            if (this.water_doors.countActive(true) === 1) {
+                console.log('Congratulations, you have passed the level.');
+            }
+        })
+
+        this.physics.add.collider(this.player2, this.water_doors, () => {
+            if (this.fire_doors.countActive(true) === 1) {
+                console.log('Congratulations, you have passed the level.');
+            }
+        })
+
 
         this.physics.add.collider(this.player, this.platforms)
         this.physics.add.collider(this.player, this.waters)
@@ -184,6 +178,19 @@ export default class mainScene extends Phaser.Scene {
         }, [], this);
     }
     update() {
+
+        this.physics.add.overlap(this.player, this.waters, () => {
+            this.player.destroy();
+            this.scene.restart();
+          });
+        
+          this.physics.add.overlap(this.player2, this.lavas, () => {
+            this.player2.destroy();
+            this.scene.restart();
+          });
+        
+
+
         if (this.cursor.left.isDown) {
             this.player.setVelocityX(-160)
         } else if (this.cursor.right.isDown) {
